@@ -20,11 +20,22 @@ final class MarkerSelectorCommand extends AbstractPlayerCommand {
     MarkerSelectorCommand(MarkerPermissionPacketFilter markerFilter) {
         super("marker", "Open marker icon selector");
         this.markerFilter = markerFilter;
-    }
-
-    @Override
-    protected boolean canGeneratePermission() {
-        return false;
+        // Update 6 removed canGeneratePermission(); this class overrode it to false. Deleting the
+        // override is NOT the migration here, because a command that declares nothing gets a node
+        // of its own -- /marker would end up gated behind
+        // "gillodaby.better_markermap.command.marker", which nobody holds, on top of the check it
+        // already performs. requireNoPermission() is the replacement the 0.6 javadoc scopes to
+        // exactly this shape: "Say it for a command that hands out the first permission on a
+        // server, or one that guards itself by some other means, and say why."
+        //
+        // Why: /marker guards itself in execute() with markerFilter.canUseMarkerUi(...), i.e.
+        // BetterMarkerMapPermissions.PERM_MARKER_UI ("bettermarkermap.marker.ui"). That is the
+        // node this plugin documents and that server owners grant. The engine gate would be a
+        // second, undocumented one.
+        //
+        // /markermap deliberately does NOT do this: it never overrode canGeneratePermission and
+        // has no internal check, so it keeps its generated node exactly as on 0.5.
+        requireNoPermission();
     }
 
     @Override

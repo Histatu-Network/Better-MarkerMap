@@ -1,7 +1,7 @@
 {
   "id": "bettermarkermap",
   "name": "Better MarkerMap",
-  "version": "1.0.0",
+  "version": "6.0.0",
   "author": "GilloDaby",
   "description": "Controls world map marker creation, deletion, teleport and limits via permissions.",
   "main": "com.gillodaby.bettermarkermap.BetterMarkerMapPlugin"
