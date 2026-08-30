@@ -17,6 +17,9 @@ tasks.named('jar') {
     if (file('manifest.json').exists()) {
         from('manifest.json') { into '' }
     }
+    // The ownership notice travels with the artifact, at the jar root.
+    from('LICENSE') { into '' }
+    from('OWNERSHIP.md') { into '' }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
@@ -35,11 +38,12 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 repositories {
+    maven { url = 'https://maven.hytale.com/release' }
     mavenCentral()
 }
 
 dependencies {
-    compileOnly files("../libs/HytaleServer.jar")
+    compileOnly 'com.hypixel.hytale:Server:0.6.2'
 }
 
 tasks.named('processResources') {

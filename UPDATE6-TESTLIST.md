@@ -64,8 +64,9 @@ than assumed unchanged.
 ## 3. Manifest
 
 `Version` 5.0.0 -> 6.0.0 (also in `plugin.json`, which still said 1.0.0 - stale and now aligned).
-`ServerVersion` `">=0.5.0 <0.6.0"` -> `">=0.6.0-pre.0 <0.7.0"`; the old range **excluded** 0.6, so
-the plugin would not have loaded at all.
+`ServerVersion` `">=0.5.0 <0.6.0"` -> `">=0.6.0 <0.7.0"`; the old range **excluded** 0.6, so
+the plugin would not have loaded at all. (It was first set to `">=0.6.0-pre.0 <0.7.0"` while the
+server was still on a `0.6.0-pre.N` build; `0.6.0` is a final release, so the plain range matches.)
 
 ---
 
@@ -110,5 +111,7 @@ Every node below is a hardcoded literal, so none of them moved. Re-test the ones
   `FlexWeight` inside `Anchor:(...)`, no underscore element ids.
 - `MarkerPermissionPacketFilter` and the rest of the enforcement path compiled clean on 0.6 with
   `-Xlint:deprecation -Xlint:removal` already enabled - no deprecated API in use.
-- This repo has **no Gradle wrapper**; it builds with the system Gradle (9.4.0). Unrelated to the
-  migration, but `gradlew.bat` is not there if you go looking for it.
+- The repo now carries a Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`, Gradle
+  9.2.0), so `./gradlew build` is the supported way to build it and no system Gradle is required.
+- The Hytale server API is no longer a jar you place next to the checkout: `build.gradle` resolves
+  `com.hypixel.hytale:Server:0.6.2` as `compileOnly` from `https://maven.hytale.com/release`.

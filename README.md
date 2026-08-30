@@ -1,5 +1,11 @@
 # Better MarkerMap
 
+> **Ownership notice** - Copyright (c) 2026 GilloDaby. All rights reserved.
+> This repository may be hosted and maintained under another account or organisation
+> (currently the Histatu Network). That hosting transfers **no rights whatsoever**: it
+> is a revocable permission to run and maintain the plugin, not a transfer of the work.
+> See [LICENSE](LICENSE) and [OWNERSHIP.md](OWNERSHIP.md).
+
 Better MarkerMap lets you control world map marker actions with permission nodes:
 - create personal/shared markers
 - remove own markers (others only with admin permission)
