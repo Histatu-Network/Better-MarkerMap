@@ -1,0 +1,46 @@
+# Build this plugin on every push, so a broken build is noticed here rather
+# than when somebody tries to deploy it.
+#
+# This workflow can only read. It has no credentials for any server, and it is
+# not permitted to publish or release anything — those are separate decisions.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege, deliberately. A workflow in any one repository must never be
+# a route to anything outside it.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "25"
+          distribution: temurin
+          cache: gradle
+
+      - name: Make the wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew --no-daemon build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          # The commit is in the name so an artifact can always be traced back
+          # to what produced it.
+          name: ${{ github.event.repository.name }}-${{ github.sha }}
+          path: build/libs/*.jar
+          # A build that produces no jar is a failure. Without this it uploads
+          # nothing, passes green, and nobody looks at it again.
+          if-no-files-found: error
+          retention-days: 30
