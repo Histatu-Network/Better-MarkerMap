@@ -32,15 +32,24 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build
-        run: ./gradlew --no-daemon build
+        run: ./gradlew --no-daemon assemble
 
       - uses: actions/upload-artifact@v4
         with:
           # The commit is in the name so an artifact can always be traced back
           # to what produced it.
           name: ${{ github.event.repository.name }}-${{ github.sha }}
-          path: build/libs/*.jar
-          # A build that produces no jar is a failure. Without this it uploads
+          # Several shapes, because this organisation has several. A plain
+          # project puts its jar in build/libs; a multi-module one puts it in
+          # <module>/build/libs, which is why these are globbed rather than
+          # named; and a Gradle-built asset pack produces a zip under
+          # build/dist. Assuming the first shape meant AdminPortals and
+          # Histatu-SalvagerBooster both built perfectly and then failed on the
+          # upload, having produced an artifact this was not looking for.
+          path: |
+            **/build/libs/*.jar
+            **/build/dist/*.zip
+          # A build that produces nothing is a failure. Without this it uploads
           # nothing, passes green, and nobody looks at it again.
           if-no-files-found: error
           retention-days: 30
