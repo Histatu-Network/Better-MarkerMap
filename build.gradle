@@ -3,7 +3,6 @@ plugins {
 }
 
 group = 'com.gillodaby'
-version = '6.0.0'
 
 tasks.named('jar') {
     archiveBaseName.set('BetterMarkerMap')
@@ -51,5 +50,30 @@ tasks.named('processResources') {
     from('src/main/resources/Common/UI/WorldMap/MapMarkers') {
         include '*.png'
         into 'Common/UI/Custom/Textures/BetterMarkerMap/MapMarkers'
+    }
+}
+
+// --- Release line: one version, and a build identity from CI ---------------
+// The version lives in gradle.properties and nowhere else. Gradle reads it
+// from there on its own, and manifest.json is filled in from it below, so the
+// number on the file and the number the server reads cannot drift apart.
+//
+// CI passes -PbuildNumber and -PcommitHash, which are appended as semver
+// build metadata: 1.2.3+57.a1b2c3d. The server ignores build metadata in every
+// version comparison it makes, so this says exactly which build a file came
+// from without changing what the version means to any dependency range.
+// A local build passes neither and is completely unchanged by this.
+def releaseBuild = findProperty('buildNumber')
+if (releaseBuild) {
+    def releaseCommit = findProperty('commitHash')
+    def suffix = releaseCommit ? "${releaseBuild}.${releaseCommit.toString().take(7)}" : "${releaseBuild}"
+    version = "${version}+${suffix}".toString()
+}
+
+tasks.named('jar') {
+    filteringCharset = 'UTF-8'
+    inputs.property('pluginVersion', project.version.toString())
+    filesMatching('manifest.json') {
+        expand(version: project.version.toString())
     }
 }
